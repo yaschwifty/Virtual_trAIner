@@ -4,7 +4,7 @@ import numpy as np
 import time
 
 
-class PoseDetector:
+class VirtualTrainer:
 
     def __init__(self, staticImg=False, mode=False, upBody=False, smooth=True, detectCon=0.9, trackCon=0.9):
         self.staticImg = staticImg
@@ -90,41 +90,6 @@ class PoseDetector:
         cv2.putText(img, str(int(count)), (70, 100), cv2.FONT_HERSHEY_PLAIN, 3, (255, 0, 0), 3)
         cv2.putText(img, str(int(wrong - count)), (70, 140), cv2.FONT_HERSHEY_PLAIN, 3, (0, 0, 255), 3)
         return count, direc, wrong, direc2
-    #
-    # def shoulderPress(self, img, count, direc):
-    #     if count == 0:
-    #         count += 0.5
-    #     angle1 = self.findAngle(img, 11, 13, 15)
-    #     angle2 = self.findAngle(img, 12, 14, 16)
-    #     per1 = np.interp(angle1, (160, 40), (0, 100))
-    #     per2 = np.interp(angle2, (160, 40), (0, 100))
-    #     if per1 == 100 and per2 == 100:
-    #         if direc == 0:
-    #             count += 0.5
-    #             direc = 1
-    #     if per1 == 0 and per2 == 0:
-    #         if direc == 1:
-    #             count += 0.5
-    #             direc = 0
-    #     cv2.putText(img, str(int(count)), (70, 100), cv2.FONT_HERSHEY_PLAIN, 3, (255, 0,), 3)
-    #     return count, direc
-    #
-    # def squats(self, img, count, direc):
-    #     angle1 = self.findAngle(img, 24, 26, 28)
-    #     angle2 = self.findAngle(img, 23, 25, 27)
-    #     per1 = np.interp(angle1, (160, 60), (0, 100))
-    #     per2 = np.interp(angle2, (160, 60), (0, 100))
-    #     if per1 == 100 and per2 == 100:
-    #         if direc == 0:
-    #             count += 0.5
-    #             direc = 1
-    #     if per1 == 0 and per2 == 0:
-    #         if direc == 1:
-    #             count += 0.5
-    #             direc = 0
-    #     cv2.putText(img, str(int(count)), (70, 100), cv2.FONT_HERSHEY_PLAIN, 3, (255, 0,), 3)
-    #     return count, direc
-
 
 def main():
     print("1. Bicep Curls")
@@ -143,24 +108,24 @@ def main():
         l11, l12, l13, l21, l22, l23, a1, a2, w1, w2 = 11, 13, 15, 12, 14, 16, 70, 160, 70, 120
     elif x == 3:
         st = "sq.mp4"
-        l11, l12, l13, l21, l22, l23, a1, a2, w1, w2 = 23, 25, 27, 24, 26, 28, 90, 170, 120, 170
+        l11, l12, l13, l21, l22, l23, a1, a2, w1, w2 = 23, 25, 27, 24, 26, 28, 80, 170, 120, 170
     cap = cv2.VideoCapture(st)
     # cap = cv2.VideoCapture(0)
     pTime = 0
-    detector = PoseDetector()
+    trainer = VirtualTrainer()
     while True:
         success, img = cap.read()
         img = cv2.flip(img, 1)
         img = cv2.resize(img, (960, 540))
-        img = detector.findPose(img, False)
-        lmList = detector.findPosition(img, False)
+        img = trainer.findPose(img, False)
+        lmList = trainer.findPosition(img, False)
         if len(lmList) != 0:
             if x == 1:
-                count, direc, wrong, direc2 = detector.countReps(img, count, direc, wrong, direc2, l11, l12, l13, l21, l22, l23, a1, a2, w1, w2)
+                count, direc, wrong, direc2 = trainer.countReps(img, count, direc, wrong, direc2, l11, l12, l13, l21, l22, l23, a1, a2, w1, w2)
             elif x == 2:
-                count, direc, wrong, direc2 = detector.countReps(img, count, direc, wrong, direc2, l11, l12, l13, l21, l22, l23, a1, a2, w1, w2)
+                count, direc, wrong, direc2 = trainer.countReps(img, count, direc, wrong, direc2, l11, l12, l13, l21, l22, l23, a1, a2, w1, w2)
             elif x == 3:
-                count, direc, wrong, direc2 = detector.countReps(img, count, direc, wrong, direc2, l11, l12, l13, l21, l22, l23, a1, a2, w1, w2)
+                count, direc, wrong, direc2 = trainer.countReps(img, count, direc, wrong, direc2, l11, l12, l13, l21, l22, l23, a1, a2, w1, w2)
             cTime = time.time()
             fps = 1 / (cTime - pTime)
             pTime = cTime
