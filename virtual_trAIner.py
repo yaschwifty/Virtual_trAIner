@@ -91,6 +91,32 @@ class VirtualTrainer:
         cv2.putText(img, str(int(wrong - count)), (70, 140), cv2.FONT_HERSHEY_PLAIN, 3, (0, 0, 255), 3)
         return count, direc, wrong, direc2
 
+    def countRepsRev(self, img, count, direc, wrong, direc2, l11, l12, l13, l21, l22, l23, a1, a2, w1, w2):
+        angle1 = self.findAngle(img, l11, l12, l13)
+        angle2 = self.findAngle(img, l21, l22, l23)
+        per1 = np.interp(angle1, (a1, a2), (0, 100))
+        per2 = np.interp(angle2, (a1, a2), (0, 100))
+        if per1 == 0 and per2 == 0:
+            if direc == 0:
+                count += 0.5
+                direc = 1
+        if per1 == 100 and per2 == 100:
+            if direc == 1:
+                count += 0.5
+                direc = 0
+        wrong1 = np.interp(angle1, (w1, w2), (0, 100))
+        wrong2 = np.interp(angle2, (w1, w2), (0, 100))
+        if wrong1 == 0 and wrong2 == 0:
+            if direc2 == 0:
+                wrong += 1
+                direc2 = 1
+        if wrong1 == 100 and wrong2 == 100:
+            if direc2 == 1:
+                direc2 = 0
+        cv2.putText(img, str(int(count)), (70, 100), cv2.FONT_HERSHEY_PLAIN, 3, (255, 0, 0), 3)
+        cv2.putText(img, str(int(wrong - count)), (70, 140), cv2.FONT_HERSHEY_PLAIN, 3, (0, 0, 255), 3)
+        return count, direc, wrong, direc2
+
 def main():
     print("1. Bicep Curls")
     print("2. Shoulder Press")
@@ -104,12 +130,11 @@ def main():
         l11, l12, l13, l21, l22, l23, a1, a2, w1, w2 = 11, 13, 15, 12, 14, 16, 40, 150, 90, 150
     elif x == 2:
         st = "sp.mp4"
-        count += 0.5
-        l11, l12, l13, l21, l22, l23, a1, a2, w1, w2 = 11, 13, 15, 12, 14, 16, 70, 160, 70, 120
+        l11, l12, l13, l21, l22, l23, a1, a2, w1, w2 = 11, 13, 15, 12, 14, 16, 70, 160, 70, 100
     elif x == 3:
         st = "sq.mp4"
         l11, l12, l13, l21, l22, l23, a1, a2, w1, w2 = 23, 25, 27, 24, 26, 28, 80, 170, 120, 170
-    cap = cv2.VideoCapture(st)
+    cap = cv2.VideoCapture(0)
     # cap = cv2.VideoCapture(0)
     pTime = 0
     trainer = VirtualTrainer()
@@ -123,7 +148,7 @@ def main():
             if x == 1:
                 count, direc, wrong, direc2 = trainer.countReps(img, count, direc, wrong, direc2, l11, l12, l13, l21, l22, l23, a1, a2, w1, w2)
             elif x == 2:
-                count, direc, wrong, direc2 = trainer.countReps(img, count, direc, wrong, direc2, l11, l12, l13, l21, l22, l23, a1, a2, w1, w2)
+                count, direc, wrong, direc2 = trainer.countRepsRev(img, count, direc, wrong, direc2, l11, l12, l13, l21, l22, l23, a1, a2, w1, w2)
             elif x == 3:
                 count, direc, wrong, direc2 = trainer.countReps(img, count, direc, wrong, direc2, l11, l12, l13, l21, l22, l23, a1, a2, w1, w2)
             cTime = time.time()
